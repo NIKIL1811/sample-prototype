@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: bookguard-postgres
+    environment:
+      POSTGRES_USER: bookguard
+      POSTGRES_PASSWORD: bookguard_secret
+      POSTGRES_DB: bookguard
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./db/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - ./db/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql
+
+  redis:
+    image: redis:7-alpine
+    container_name: bookguard-redis
+    ports:
+      - "6379:6379"
+
+  mock-provider:
+    build:
+      context: ./services/mock-provider
+    container_name: bookguard-mock-provider
+    ports:
+      - "4000:4000"
+    environment:
+      PORT: 4000
+
+  backend:
+    build:
+      context: ./services/backend
+    container_name: bookguard-backend
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: 3000
+      DATABASE_URL: postgres://bookguard:bookguard_secret@postgres:5432/bookguard
+      REDIS_URL: redis://redis:6379
+      MOCK_PROVIDER_URL: http://mock-provider:4000
+      AI_ENABLED: "true"
+    depends_on:
+      - postgres
+      - redis
+      - mock-provider
+
+  frontend:
+    build:
+      context: ./services/frontend
+    container_name: bookguard-frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
