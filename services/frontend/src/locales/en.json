@@ -1,0 +1,11 @@
+{
+  "title": "BookGuard Travel",
+  "seatsLeft": "seats left",
+  "holdSeat": "Hold this seat",
+  "heldMessage": "held for you",
+  "confirmBooking": "Confirm booking",
+  "reconciling": "Confirming with the airline",
+  "reconcilingDesc": "Your seat is still held. We are checking whether the airline created your ticket.",
+  "status": "Status",
+  "confirmed": "Booking Confirmed"
+}
